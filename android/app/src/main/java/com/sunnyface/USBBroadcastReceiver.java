@@ -15,12 +15,16 @@ public class USBBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
+        Log.d("MY_LOG received", action);
         if (ACTION_USB_PERMISSION.equals(action)) {
             synchronized (this) {
+                Log.d("MY_LOG received", "received2");
                 UsbDevice device = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
 
                 if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                    Log.d("MY_LOG received", "received3");
                     if(device != null){
+                        Log.d("MY_LOG received", "received4");
                         //call method to set up device communication
                     }
                 }
