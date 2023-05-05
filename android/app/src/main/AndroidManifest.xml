@@ -49,13 +49,13 @@
             </intent-filter>
         </receiver>
 
-<!--        <receiver
+        <receiver
             android:name="com.sunnyface.BatteryBroadcastReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BATTERY_CHANGED" />
             </intent-filter>
-        </receiver>-->
+        </receiver>
     </application>
 </manifest>

@@ -1,10 +1,14 @@
 package com.sunnyface;
 
 import android.Manifest;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraManager;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
@@ -33,20 +37,46 @@ public class MainActivity extends ReactActivity {
     CustomBroadcastReceiver receiver = new CustomBroadcastReceiver();
     registerReceiver(receiver, intentFilter);
 
+    Log.i("MY_LOG", "start2.5");
+    PendingIntent permissionIntent = PendingIntent.getBroadcast(this, 0, new Intent("solutions.sunny.EXECUTION_MASCOT_EMOTION"), PendingIntent.FLAG_IMMUTABLE);
+    IntentFilter filter = new IntentFilter("com.android.example.USB_PERMISSION");
+    USBBroadcastReceiver receiver1 = new USBBroadcastReceiver();
+    registerReceiver(receiver1, filter);
+
     UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
 
     HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
-    Log.i("MY_LOG", deviceList.toString());
+    UsbManager usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+    Log.i("MY_LOG list", deviceList.toString());
     Iterator<UsbDevice> deviceIterator = deviceList.values().iterator();
     while(deviceIterator.hasNext()){
       UsbDevice device = deviceIterator.next();
-      Log.i("MY_LOG", String.valueOf(device));
-      Log.i("MY_LOG", String.valueOf(device.getDeviceId()));
+      usbManager.requestPermission(device, permissionIntent);
+      Log.i("MY_LOG device", String.valueOf(device));
+      /*Log.i("MY_LOG", String.valueOf(device.getDeviceId()));*/
     }
 
-/*    IntentFilter intentFilter2 = new IntentFilter("android.intent.action.BATTERY_CHANGED");
+    IntentFilter intentFilter2 = new IntentFilter("android.intent.action.BATTERY_CHANGED");
     BatteryBroadcastReceiver receiver2 = new BatteryBroadcastReceiver();
-    registerReceiver(receiver2, intentFilter2);*/
+    registerReceiver(receiver2, intentFilter2);
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    CameraManager manager =
+            (CameraManager) getSystemService(CAMERA_SERVICE);
+    try {
+      for (String cameraId : manager.getCameraIdList()) {
+        CameraCharacteristics chars
+                = manager.getCameraCharacteristics(cameraId);
+        // Do something with the characteristics
+        int deviceLevel = chars.get(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL);
+        Log.d("MY_LOG_2", " **** device [" + cameraId + "] level:" + deviceLevel);
+      }
+    } catch (CameraAccessException e) {
+      e.printStackTrace();
+    }
   }
 
   /**
